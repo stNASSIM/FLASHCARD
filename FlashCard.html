@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flashcards Espagnol - Français</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #f0f0f0;
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 600px;
+            text-align: center;
+        }
+
+        .header {
+            margin-bottom: 20px;
+        }
+
+        .header h1 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .progress {
+            color: #666;
+            margin-bottom: 20px;
+        }
+
+        .flashcard {
+            background: white;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+            min-height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            perspective: 1000px;
+            transition: transform 0.3s ease;
+        }
+
+        .flashcard:hover {
+            transform: translateY(-5px);
+        }
+
+        .card-content {
+            font-size: 24px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .controls {
+            margin-top: 20px;
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        button {
+            background: white;
+            border: 2px solid #333;
+            border-radius: 5px;
+            padding: 10px 20px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        button:hover {
+            background: #333;
+            color: white;
+        }
+
+        .fade {
+            animation: fadeEffect 0.5s;
+        }
+
+        @keyframes fadeEffect {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Flashcards Espagnol - Français</h1>
+            <div class="progress">Carte <span id="current">1</span> sur <span id="total">40</span></div>
+        </div>
+
+        <div class="flashcard" id="flashcard">
+            <div class="card-content" id="content"></div>
+        </div>
+
+        <div class="controls">
+            <button onclick="previous()">Précédent</button>
+            <button onclick="flip()">Retourner</button>
+            <button onclick="next()">Suivant</button>
+        </div>
+    </div>
+
+    <script>
+        const cards = [
+            { spanish: "una cueva", french: "une grotte" },
+            { spanish: "dibujar", french: "dessiner" },
+            { spanish: "cazar", french: "chasser" },
+            { spanish: "la caza", french: "la chasse" },
+            { spanish: "la prehistoria", french: "la préhistoire" },
+            { spanish: "un bisonte", french: "un bison" },
+            { spanish: "un mamut", french: "un mamut" },
+            { spanish: "un ciervo", french: "un cerf" },
+            { spanish: "un jabalí", french: "un sanglier" },
+            { spanish: "una pared", french: "un mur" },
+            { spanish: "un garrote /una porra", french: "un gourdin" },
+            { spanish: "El cavernícola", french: "l'homme des cavernes" },
+            { spanish: "Mientras que", french: "alors que" },
+            { spanish: "la voz en off", french: "la voix off" },
+            { spanish: "un cura", french: "un curé/un prêtre" },
+            { spanish: "un siglo", french: "un siècle" },
+            { spanish: "un tráiler", french: "une bande annonce" },
+            { spanish: "descubrir", french: "découvrir" },
+            { spanish: "un descubrimiento", french: "une découverte" },
+            { spanish: "el protagonista", french: "le personnage principal" },
+            { spanish: "el estreno", french: "sortie pour la première fois" },
+            { spanish: "Adán y Eva", french: "Adam et Ève" },
+            { spanish: "El arte callejero", french: "Le Street Art" },
+            { spanish: "una herramienta", french: "un outil" },
+            { spanish: "hallar", french: "trouver" },
+            { spanish: "reivindicar", french: "revendiquer" },
+            { spanish: "un edificio", french: "un bâtiment" },
+            { spanish: "extender", french: "étendre" },
+            { spanish: "alcanzar", french: "atteindre" },
+            { spanish: "alrededor", french: "environ" },
+            { spanish: "un lago", french: "un lac" },
+            { spanish: "maravilloso(a)", french: "merveilleux(se)" },
+            { spanish: "un mural", french: "une fresque" },
+            { spanish: "un emperador", french: "un empereur" },
+            { spanish: "un templo", french: "un temple" },
+            { spanish: "la población", french: "la population" },
+            { spanish: "los indígenas", french: "les indigènes" },
+            { spanish: "una pirámide", french: "une pyramide" },
+            { spanish: "el trono", french: "le trône" },
+            { spanish: "el mercado", french: "le marché" }
+        ];
+
+        let currentIndex = 0;
+        let isFlipped = false;
+
+        const contentElement = document.getElementById('content');
+        const currentElement = document.getElementById('current');
+        const totalElement = document.getElementById('total');
+        const flashcardElement = document.getElementById('flashcard');
+
+        function updateCard() {
+            contentElement.textContent = isFlipped ? cards[currentIndex].french : cards[currentIndex].spanish;
+            currentElement.textContent = currentIndex + 1;
+            totalElement.textContent = cards.length;
+            flashcardElement.classList.add('fade');
+            setTimeout(() => flashcardElement.classList.remove('fade'), 500);
+        }
+
+        function flip() {
+            isFlipped = !isFlipped;
+            updateCard();
+        }
+
+        function next() {
+            currentIndex = (currentIndex + 1) % cards.length;
+            isFlipped = false;
+            updateCard();
+        }
+
+        function previous() {
+            currentIndex = (currentIndex - 1 + cards.length) % cards.length;
+            isFlipped = false;
+            updateCard();
+        }
+
+        // Initialize
+        updateCard();
+
+        // Add click event to flashcard
+        flashcardElement.addEventListener('click', flip);
+    </script>
+</body>
+</html>
